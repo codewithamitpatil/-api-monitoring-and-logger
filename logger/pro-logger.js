@@ -1,0 +1,77 @@
+
+
+const moment = require('moment'),
+      fs     =   require('fs'),
+      { 
+        logLevel ,
+        logPath,       
+        mongodb,
+        mongodbLogOptions
+      } = require('./../config/config'),
+      { 
+        createLogger,
+        format,
+        transports
+      } = require('winston'),
+      { 
+        combine, 
+        timestamp,
+        errors ,
+        json
+      } = format;
+
+// for storeing logs in mongodb
+require('winston-mongodb');
+
+const  BuildProdLogger = () => {
+
+// ensure log directory exists
+fs.existsSync(logPath) || fs.mkdirSync(logPath)
+
+// custom time and date
+const DATE = moment().format('YYYY-MM-DD');
+const TIME = moment().format('HH:MM:SS');
+
+return createLogger({
+    level:logLevel,
+    format: combine(
+                    timestamp(),
+                    errors({stack :true}) ,
+                    json()
+                ),
+    defaultMeta: { date:DATE ,time:TIME },
+    transports: [
+                    new transports.File({ 
+                            filename: logPath +'error.logs', 
+                            level: logLevel, 
+                            json: true
+                    }),
+
+                    new transports.MongoDB({
+                      level: logLevel, 
+                      db:mongodb,
+                      options:mongodbLogOptions,
+                      collection:'ErrorLogs'
+                    })
+        
+              ],
+    exceptionHandlers: [
+                          new transports.File({
+                               filename: logPath +'exception.logs', 
+                               handleExceptions: true
+                          }),
+                          new transports.MongoDB({
+                              level: logLevel, 
+                              db:mongodb,
+                              options:mongodbLogOptions,
+                              collection:'ExceptionLogs'
+                          })
+    ],
+    exitOnError: false
+     
+});
+
+}
+
+// export
+module.exports = BuildProdLogger;
