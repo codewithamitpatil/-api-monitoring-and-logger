@@ -30,6 +30,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 // server req logger
 require('./logger/morgan-req-logger')(app);
 
+// env variables
+require('dotenv').config();
 
 // demo req
 app.get('',async(req,res)=>{
