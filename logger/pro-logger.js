@@ -1,5 +1,4 @@
 
-
 const moment = require('moment'),
       fs     =   require('fs'),
       { 
@@ -42,7 +41,7 @@ return createLogger({
     defaultMeta: { date:DATE ,time:TIME },
     transports: [
                     new transports.File({ 
-                            filename: logPath +'error.logs', 
+                            filename: logPath +'ProdError.logs', 
                             level: logLevel, 
                             json: true
                     }),
@@ -51,20 +50,20 @@ return createLogger({
                       level: logLevel, 
                       db:mongodb,
                       options:mongodbLogOptions,
-                      collection:'ErrorLogs'
+                      collection:'ProdErrorLogs'
                     })
         
               ],
     exceptionHandlers: [
                           new transports.File({
-                               filename: logPath +'exception.logs', 
+                               filename: logPath +'ProdException.logs', 
                                handleExceptions: true
                           }),
                           new transports.MongoDB({
                               level: logLevel, 
                               db:mongodb,
                               options:mongodbLogOptions,
-                              collection:'ExceptionLogs'
+                              collection:'ProdExceptionLogs'
                           })
     ],
     exitOnError: false

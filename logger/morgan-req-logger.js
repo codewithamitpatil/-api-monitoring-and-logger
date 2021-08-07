@@ -8,12 +8,9 @@ const morgan = require('morgan'),
         logPath
       } = require('./../config/config'); 
 
+morgan.token('date', (req, res) => moment().format('YYYY-MM-DD HH:MM:SS'));
 
-
-morgan.token('date', (req, res) => moment().format('YYYY-MM-DD'));
-morgan.token('date', (req, res) => moment().format('HH:MM:SS'));
-
-morgan.format('LogFormat', '[:date]":remote-addr :method :url" :status :res[content-length] - :response-time ms');
+morgan.format('LogFormat', '[:date]":remote-addr :method :url" :status  - :response-time ms');
 
 const accessLogStream = fsr.getStream({
   filename: logPath + '/access-%DATE%.logs',
@@ -22,5 +19,9 @@ const accessLogStream = fsr.getStream({
 });
 
 // export module
-module.exports = app => app.use(morgan('LogFormat', {stream: accessLogStream}));
 
+if(env === 'development'){
+    module.exports = app => app.use(morgan('dev'));
+}else{
+   module.exports = app => app.use(morgan('LogFormat', {stream: accessLogStream}));
+}

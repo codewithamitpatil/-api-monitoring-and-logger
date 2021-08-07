@@ -44,7 +44,11 @@ return createLogger({
                 ),
     defaultMeta: { date:DATE ,time:TIME },
     transports: [
-                    new transports.Console()
+                    new transports.Console(),
+                    new transports.File({
+                               filename: logPath +'DevError.logs', 
+                               handleExceptions: false
+                    })
                 ],
     exceptionHandlers: [
                           new transports.File({
