@@ -4,7 +4,11 @@ const   express = require('express'),
         cors = require('cors'),
         bodyParser = require('body-parser'),
         helmet = require('helmet'),
-        HttpError = require('http-errors');
+        HttpError = require('http-errors')
+        ;
+
+// intialize env variables
+require('dotenv').config();
 
 // logger
 const logger = require('./logger/index');
@@ -14,12 +18,30 @@ const { port } = require('./config/config');
 
 const app = express();
 
+const statusMonitor = require('./logger/statusMonitor');
+
+
+app.use(statusMonitor);
+// app.use(require('express-status-monitor')({
+// chartVisibility: {
+//   cpu: true,
+//   mem: true,
+//   load: true,
+//   eventLoop: true,
+//   heap: true,
+//   responseTime: true,
+//   rps: true,
+//   statusCodes: true
+// }}));
+
 // enable cors
 app.use('*',cors());
 
 // Helmet: Set Headers for protection 
 app.use(helmet());
 
+// server request logger
+require('./logger/morgan-req-logger')(app);
 
 // for json  parsing
 app.use(bodyParser.json());
@@ -27,20 +49,19 @@ app.use(bodyParser.json());
 // for urlencode data parsing
 app.use(bodyParser.urlencoded({extended:true}));
 
-// server req logger
-require('./logger/morgan-req-logger')(app);
 
-// env variables
-require('dotenv').config();
 
 // demo req
-app.get('',async(req,res)=>{
-
-
+app.get('/:id',async(req,res)=>{
 
    try{
-           throw new HttpError.BadRequest();
-           res.status(200).send('hello'); 
+      
+      if(req.params.id > 5)
+      {
+         throw new HttpError.InternalServerError();
+      }
+       
+      res.status(200).send('hello'); 
 
    }catch(e)
    {
@@ -49,16 +70,15 @@ app.get('',async(req,res)=>{
 
     // logger.error(new HttpError.NotFound());
     logger.error(e);
-    res.send(e.message);
+    res.status(e.status).send(e.message);
    }
 
 });
 
 
-
-
 // start server
 app.listen(port,()=>{
-    console.log(`Server is listening on port : ${port}`);
+     logger.info(`Server is listening on port : ${port}`);
+     console.log(`Server is listening on port : ${port}`);
 });
 
