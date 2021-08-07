@@ -36,8 +36,11 @@ const production = {
 
 const isProduction = true;
 
-if (isProduction) console.log('Production Env');
-else console.log('Development Env');
+if (isProduction){
+   console.log('Production Env');
+}else{
+   console.log('Development Env');
+}
 
 module.exports = isProduction
   ? { ...production  }
