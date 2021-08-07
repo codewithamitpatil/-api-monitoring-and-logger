@@ -39,7 +39,7 @@ app.get('',async(req,res)=>{
 
 
    try{
-            //    throw new HttpError.BadRequest();
+           throw new HttpError.BadRequest();
            res.status(200).send('hello'); 
 
    }catch(e)
