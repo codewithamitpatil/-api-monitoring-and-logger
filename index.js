@@ -41,7 +41,7 @@ app.use(statusMonitor);
 
 //app.use(swStats.getMiddleware({
 
-}));
+//}));
 
 
 
