@@ -6,7 +6,7 @@ const morgan = require('morgan'),
         env,
         logLevel,
         logPath
-      } = require('./../config/config'); 
+      } = require('../config'); 
 
 // logging middlewares
 const devLogger = require('./dev-logger'),

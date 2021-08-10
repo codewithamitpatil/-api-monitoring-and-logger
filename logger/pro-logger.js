@@ -6,7 +6,7 @@ const moment = require('moment'),
         logPath,       
         mongodb,
         mongodbLogOptions
-      } = require('./../config/config'),
+      } = require('../config'),
       { 
         createLogger,
         format,
@@ -19,8 +19,14 @@ const moment = require('moment'),
         json
       } = format;
 
+
 // for storeing logs in mongodb
 require('winston-mongodb');
+
+
+// importing custom mail transport
+const  Mail  = require('./mailTransport');
+
 
 const  BuildProdLogger = () => {
 
@@ -31,6 +37,7 @@ fs.existsSync(logPath) || fs.mkdirSync(logPath)
 const DATE = moment().format('YYYY-MM-DD');
 const TIME = moment().format('HH:MM:SS');
 
+// intialize logger
 return createLogger({
     level:logLevel,
     format: combine(
@@ -41,7 +48,7 @@ return createLogger({
     defaultMeta: { date:DATE ,time:TIME },
     transports: [
                     new transports.File({ 
-                            filename: logPath +'ProdError.logs', 
+                            filename: logPath +'Logs.logs', 
                             level: logLevel, 
                             json: true
                     }),
@@ -50,11 +57,12 @@ return createLogger({
                       level: logLevel, 
                       db:mongodb,
                       options:mongodbLogOptions,
-                      collection:'ProdErrorLogs'
+                      collection:'ProdLogs'
                     })
+  
         
               ],
-    exceptionHandlers: [
+    exceptionHandlers: [ 
                           new transports.File({
                                filename: logPath +'ProdException.logs', 
                                handleExceptions: true
@@ -64,7 +72,8 @@ return createLogger({
                               db:mongodb,
                               options:mongodbLogOptions,
                               collection:'ProdExceptionLogs'
-                          })
+                          }),
+                          new Mail() 
     ],
     exitOnError: false
      

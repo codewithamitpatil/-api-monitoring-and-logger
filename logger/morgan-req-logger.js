@@ -6,7 +6,7 @@ const morgan = require('morgan'),
         env,
         logLevel,
         logPath
-      } = require('./../config/config'); 
+      } = require('../config'); 
 
 morgan.token('date', (req, res) => moment().format('YYYY-MM-DD HH:MM:SS'));
 

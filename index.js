@@ -4,35 +4,49 @@ const   express = require('express'),
         cors = require('cors'),
         bodyParser = require('body-parser'),
         helmet = require('helmet'),
-        HttpError = require('http-errors')
-        ;
+        HttpError = require('http-errors'),
+        compression = require('compression')
+         ;
+
+
+
+const swStats = require('swagger-stats');
+//const apiSpec = require('swagger.json');
 
 // intialize env variables
 require('dotenv').config();
 
-// logger
-const logger = require('./logger/index');
+// importing logger
+const logger = require('./logger/index'),
+      statusMonitor = require('./logger/statusMonitor');
+
+// importing error handler middleware
+const {
+        ErrorResponse ,
+        ErrorTemplate 
+      } = require('./middlewares/errorHandler');
+
+// importing api routes 
+const apiRoutes = require('./routes/index');
 
 // global configrations
-const { port } = require('./config/config'); 
+const { port } = require('./config'); 
 
+// intialize app
 const app = express();
 
-const statusMonitor = require('./logger/statusMonitor');
-
-
+// server health monitor
 app.use(statusMonitor);
-// app.use(require('express-status-monitor')({
-// chartVisibility: {
-//   cpu: true,
-//   mem: true,
-//   load: true,
-//   eventLoop: true,
-//   heap: true,
-//   responseTime: true,
-//   rps: true,
-//   statusCodes: true
-// }}));
+
+
+app.use(swStats.getMiddleware({
+  name: 'swagger-stats-authtest',
+    version: '0.99.2',
+    hostname: "localhost",
+    ip: "127.0.0.1",
+}));
+
+
 
 // enable cors
 app.use('*',cors());
@@ -40,8 +54,14 @@ app.use('*',cors());
 // Helmet: Set Headers for protection 
 app.use(helmet());
 
+// compress all
+app.use(compression());
+
 // server request logger
 require('./logger/morgan-req-logger')(app);
+
+// static folder intialize
+app.use(express.static('./public'));
 
 // for json  parsing
 app.use(bodyParser.json());
@@ -49,36 +69,28 @@ app.use(bodyParser.json());
 // for urlencode data parsing
 app.use(bodyParser.urlencoded({extended:true}));
 
+// intialize api routes
+app.use('/api',apiRoutes);
 
 
-// demo req
-app.get('/:id',async(req,res)=>{
 
-   try{
-      
-      if(req.params.id > 5)
-      {
-         throw new HttpError.InternalServerError();
-      }
-       
-      res.status(200).send('hello'); 
-
-   }catch(e)
-   {
-    // logger.info('hello server ',{name:'aaa'});
-    // logger.debug('hello',{name:'aaaa'});
-
-    // logger.error(new HttpError.NotFound());
-    logger.error(e);
-    res.status(e.status).send(e.message);
-   }
-
+app.get('/:id', (req, res) => {
+  if(req.params.id > 5){
+  return  res.status(400).send(req.body.name);
+  }
+  const animal = 'elephant';
+  res.send(animal.repeat(1000));
 });
 
 
+//  404 error handler
+app.all('*',ErrorTemplate);
+
+// global error handler
+app.use(ErrorResponse);
+
 // start server
 app.listen(port,()=>{
-     logger.info(`Server is listening on port : ${port}`);
-     console.log(`Server is listening on port : ${port}`);
+      logger.info(`Server is listening on port : ${port}`);
 });
 

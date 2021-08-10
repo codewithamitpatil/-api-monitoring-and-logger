@@ -4,7 +4,7 @@ const moment = require('moment'),
       { 
         logLevel ,
         logPath
-      } = require('./../config/config'),
+      } = require('../config'),
       { 
         createLogger,
         format,
@@ -34,6 +34,7 @@ const myFormat = printf(({ level, message, timestamp , stack }) => {
   return `${timestamp}  ${level}: ${ stack || message}`;
 });
 
+// intialize logger
 return createLogger({
     level:logLevel,
     format: combine(
@@ -44,18 +45,10 @@ return createLogger({
                 ),
     defaultMeta: { date:DATE ,time:TIME },
     transports: [
-                    new transports.Console(),
-                    new transports.File({
-                               filename: logPath +'DevError.logs', 
-                               handleExceptions: false
-                    })
+                    new transports.Console({handleExceptions:true})
+           
                 ],
-    exceptionHandlers: [
-                          new transports.File({
-                               filename: logPath +'DevException.logs', 
-                               handleExceptions: true
-                            })
-                        ],
+  
     exitOnError: false
       
 });
