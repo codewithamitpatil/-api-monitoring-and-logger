@@ -10,7 +10,7 @@ const   express = require('express'),
 
 
 
-const swStats = require('swagger-stats');
+//const swStats = require('swagger-stats');
 //const apiSpec = require('swagger.json');
 
 // intialize env variables
@@ -39,11 +39,8 @@ const app = express();
 app.use(statusMonitor);
 
 
-app.use(swStats.getMiddleware({
-  name: 'swagger-stats-authtest',
-    version: '0.99.2',
-    hostname: "localhost",
-    ip: "127.0.0.1",
+//app.use(swStats.getMiddleware({
+
 }));
 
 
