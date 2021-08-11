@@ -4,7 +4,8 @@
   "description": "monngo prsctise",
   "main": "index.js",
   "scripts": {
-    "start": "pm2-runtime start ecosystem.config.js --env production"  ,
+ "preinstall": "npm install pm2 -g", 
+    "start": "pm2-runtime index.js -i max" 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
