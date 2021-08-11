@@ -11,7 +11,10 @@ const   express = require('express'),
 const io = require('@pm2/io');
 
 
-
+io.init({
+  transactions: true // will enable the transaction tracing
+  http: true // will enable metrics about the http server (optional)
+})
 
 // importing swagger stats
 const swStats = require('swagger-stats');
@@ -88,8 +91,6 @@ app.all('*',Error404);
 // global error handler
 app.use(ErrorResponse);
 
-// always add the middleware as the last one
-app.use(io.expressErrorHandler());
 
 // start server
 app.listen(port,()=>{
