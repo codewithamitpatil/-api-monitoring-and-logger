@@ -8,12 +8,20 @@ const   express = require('express'),
         compression = require('compression')
          ;
 
+const io = require('@pm2/io');
 
 
-//const swStats = require('swagger-stats');
-//const apiSpec = require('swagger.json');
+const users = io.metric({
+  name: 'Realtime user',
+});
 
-// intialize env variables
+// importing swagger stats
+const swStats = require('swagger-stats');
+
+// importing mongodb connection
+const db = require('./db/mongo_init');
+
+// intialize  env variables
 require('dotenv').config();
 
 // importing logger
@@ -23,7 +31,7 @@ const logger = require('./logger/index'),
 // importing error handler middleware
 const {
         ErrorResponse ,
-        ErrorTemplate 
+        Error404
       } = require('./middlewares/errorHandler');
 
 // importing api routes 
@@ -38,12 +46,8 @@ const app = express();
 // server health monitor
 app.use(statusMonitor);
 
-
-//app.use(swStats.getMiddleware({
-
-//}));
-
-
+// swagger api monitor
+app.use(swStats.getMiddleware({}));
 
 // enable cors
 app.use('*',cors());
@@ -81,10 +85,13 @@ app.get('/:id', (req, res) => {
 
 
 //  404 error handler
-app.all('*',ErrorTemplate);
+app.all('*',Error404);
 
 // global error handler
 app.use(ErrorResponse);
+
+// always add the middleware as the last one
+app.use(io.expressErrorHandler());
 
 // start server
 app.listen(port,()=>{

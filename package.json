@@ -4,14 +4,15 @@
   "description": "monngo prsctise",
   "main": "index.js",
   "scripts": {
- "preinstall": "npm install pm2 -g", 
-    "start": "pm2-runtime index.js -i max" ,
+    "preinstall": "npm install pm2 -g",
+    "start": "pm2-runtime index.js -i max",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@pm2/io": "^5.0.0",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -27,6 +28,7 @@
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.6.3",
+    "pm2": "^5.1.0",
     "superagent": "^6.1.0",
     "swagger-stats": "^0.99.2",
     "winston": "^3.3.3",
