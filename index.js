@@ -11,9 +11,7 @@ const   express = require('express'),
 const io = require('@pm2/io');
 
 
-const users = io.metric({
-  name: 'Realtime user',
-});
+
 
 // importing swagger stats
 const swStats = require('swagger-stats');
