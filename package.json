@@ -27,7 +27,6 @@
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.6.3",
-    "pm2": "^5.1.0",
     "superagent": "^6.1.0",
     "swagger-stats": "^0.99.2",
     "winston": "^3.3.3",
